@@ -20,7 +20,7 @@ var merge = require('merge-stream');
 var setup = {sections: {}, pages: [], apis: {}};
 var fakeDest = '_FAKE_DEST_';
 var templates = path.resolve(__dirname, 'src/templates');
-var bowerComponents = path.resolve(__dirname, 'bower_components');
+var bowerComponents = path.resolve(__dirname, 'node_modules');
 
 function copyTemplates() {
   return function () {
@@ -86,16 +86,16 @@ function processDoc(opts) {
     navContent: '',
     navTemplateData: {}
   }, opts);
-  
+
   setup.pages = [];
   //Extend loadDefaults
   options.loadDefaults = extend({
       angular: true,
       angularAnimate: true,
       marked: true,
-      prettify: true
+      prettify: false
     }, opts.loadDefaults);
-    
+
   if (options.scripts && !(options.scripts instanceof Array)) {
     options.scripts = [options.scripts];
   }
@@ -122,7 +122,7 @@ function processDoc(opts) {
       'google-code-prettify/src/prettify.js'
     ]
   };
-  
+
   //Sets default script paths
   function joinBower(jsPaths){
     _.each(jsPaths, function(jsPath){
@@ -255,7 +255,7 @@ function processDoc(opts) {
   var docsStreamEndCb = false;
   if (options.navTemplate) {
     options.navContent = _.template(
-      fs.readFileSync(options.navTemplate, 'utf8'), 
+      fs.readFileSync(options.navTemplate, 'utf8'),
       options.navTemplateData);
   }
 
@@ -280,7 +280,7 @@ function processDoc(opts) {
 
   _.forEach(defaultScripts, function (script, i) {
     var fileName = path.normalize(script).split('/').pop();
-    if (scriptNames.indexOf(fileName) === -1) {    
+    if (scriptNames.indexOf(fileName) === -1) {
       fstreams.push(streamFile(script, 'js', fakeDest));
       options.scripts.splice(i, 0, path.join('js', fileName));
     }
